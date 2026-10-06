@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="BIT_8.jpg" width="45%">
+</p>
+
 # BIT8_CLI 0.1.0
 
 [English](README.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | **한국어**
