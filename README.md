@@ -20,6 +20,7 @@ file formats, tests, schemas, or version numbers.
 
 ==================================================
 1. ENGLISH README
+
 ==================================================
 
 Rewrite and polish:
@@ -43,10 +44,7 @@ Do not turn README.md into a complete specification.
 Use approximately this structure:
 
 # Bit8 0.1.0
-
-Language switcher
-
-Short introduction
+**English** | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
 ## Features
 
