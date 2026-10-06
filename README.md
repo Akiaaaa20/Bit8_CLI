@@ -1,179 +1,285 @@
 # Bit8 0.1.0
 
-Bit8 is a small 2D game runtime written in Rust with Lua 5.4 scripting. Games
-draw into a fixed 64×64 framebuffer; the desktop frontend presents it using
-nearest-neighbor scaling.
+Bit8 is a tiny Lua-powered 2D game runtime and development toolkit
+built in Rust.
 
-See [CHANGELOG](CHANGELOG.md) for the 0.1.0 capability summary. This repository
-is undergoing local final-release preparation; no publication is implied.
-Licensed under the [MIT License](LICENSE), copyright AKI.
+Games run on a fixed 64×64 framebuffer with Lua 5.4 scripting.
+Bit8 includes a CLI runtime, tilemaps, Sprites and animation, Nodes,
+collision, Camera support, a language service, and an integrated
+VS Code development workflow.
 
-Optional project Sprite/Animation definitions are documented in
-[Sprite data foundation](docs/sprite-data.md).
+## Features
 
-[Node runtime animation](docs/runtime-animation.md).
+- Lua 5.4 scripting with `.b8`
+- 64×64 framebuffer
+- Fixed 30 Hz simulation
+- 8×8 tiles and stable asset IDs
+- Tilemaps up to 256×256 tiles
+- Sprite and animation definitions
+- Scriptable Map Nodes
+- Box collision and Solid tiles
+- Camera-based world rendering
+- Language Service
+- VS Code Map Workspace
+- Integrated BIT8 GAME view
+- Editor-independent host protocol
 
-[Runtime-owned fixed 30 Hz timing](docs/fixed-runtime-tick.md).
+## Quick Start
 
-[Map Node Sprite selection and preview](docs/map-node-sprites.md).
+### Build and install
 
-## Run a project
+From the repository root:
 
-A project directory contains `main.b8` (preferred) or legacy `main.lua`:
+    cargo install --path . --locked
 
-```sh
-cargo run -- run games/tilesheet_demo
-# or, after installing the CLI:
-bit8 run games/tilesheet_demo
-```
+Run a project:
 
-The desktop window polls the arrow keys and maps Z to A and X to B. Escape or
-closing the window exits. From the repository root, install the CLI with:
+    bit8 run <project-path>
 
-```sh
-cargo install --path . --locked
-```
+A Bit8 project normally uses:
 
-Project paths may be relative to the current directory or absolute.
+    main.b8
 
-## Frontend host protocol
+Legacy `main.lua` projects are also supported.
 
-Frontends that provide their own display and input can start Bit8 without a
-native game window:
+### Controls
 
-```sh
-bit8 host games/tilesheet_demo
-```
+The desktop runtime uses:
 
-The host uses NDJSON over stdin/stdout. Send one `step` command per frame with
-the complete held-button list, for example
-`{"type":"step","buttons":["RIGHT","A"]}`; send
-`{"type":"stop"}` to exit. Stdout contains protocol messages only: `ready`,
-one 64×64 `frame` per step, `error`, and `exit`. Frame pixels are row-major
-`0xRRGGBB` values. Diagnostics go to stderr. The host protocol is frontend-
-independent; the VS Code extension uses it for its Game Surface.
+    Arrow Keys   Direction
+    Z            A
+    X            B
+    Escape       Exit
 
-Simulation is fixed at 30 Hz by RuntimeSession, independent of frame requests.
-The host normally measures elapsed with a monotonic clock; each step may run
-zero through five updates, then draw once. For deterministic headless execution,
-step also accepts optional integer `elapsed_ns` (for example `33333333` for one
-tick). See [fixed timing and input latching](docs/fixed-runtime-tick.md).
+## A tiny Bit8 program
 
-## Tilesheets and asset IDs
+    func init()
+        x = 28
+        y = 28
+    end
 
-Projects explicitly register PNG tilesheets in `bit8.assets.toml`. Each PNG
-must have dimensions divisible by 8. Cells are numbered left-to-right,
-top-to-bottom; registry group IDs are stable and are never inferred from
-filenames. Thus IDs such as `A1`, `A2`, and `B1` retain both group and cell
-identity. Palette index 0 is transparent when drawing a sprite.
+    func update()
+        if btn(LEFT) then x = x - 1 end
+        if btn(RIGHT) then x = x + 1 end
+        if btn(UP) then y = y - 1 end
+        if btn(DOWN) then y = y + 1 end
+    end
 
-PNG files remain in the host editor's normal Image Preview/Text Editor flow.
-Use the PNG's Explorer context menu commands **Bit8: Add to Bit8** or
-**Bit8: Apply Bit8 Name** to explicitly register an image or apply the
-canonical `<stem> (<GROUP>).png` name. Registration and identity are handled
-by the Bit8 CLI and `bit8.assets.toml`.
+    func draw()
+        cls()
+        rectfill(x, y, x + 7, y + 7, 7)
+    end
 
-Inspect registered sheets with:
+## Project Structure
 
-```sh
-bit8 inspect tilesheets games/tilesheet_demo
-bit8 inspect tilesheets games/tilesheet_demo --json
-```
+A Bit8 project can contain:
+
+    my-game/
+    ├── main.b8
+    ├── world.b8map
+    ├── bit8.assets.toml
+    ├── bit8.sprites.toml
+    ├── player.b8
+    └── tilesheet (A).png
+
+Not every project needs every file.
+
+## Tilesheets and Asset IDs
+
+PNG tilesheets are registered through `bit8.assets.toml`.
+
+Tiles are 8×8 game pixels and receive stable IDs such as:
+
+    A1
+    A2
+    A3
+    B1
+
+Asset group identity is explicit and is not inferred from the
+filename.
+
+Registered tiles can be drawn directly:
+
+    spr(A4, x, y)
 
 ## Maps
 
-`world.b8map` is a version 1 text map with positive `width` and `height` up to
-256 tiles. Each following row has exactly the declared number of cells. `--`
-is empty; all other cells must be registered asset IDs:
+Bit8 uses `.b8map` text maps.
 
-```text
-version = 1
-width = 4
-height = 2
+    version = 1
+    width = 4
+    height = 2
 
-A1 A1 A1 A1
-A1 -- A4 A1
-```
+    A1 A1 A1 A1
+    A1 -- A4 A1
 
-Inspect maps with `bit8 inspect map <project> <map-file>`; add `--json` for
-machine-readable output. For example:
+Maps may be up to 256×256 tiles.
 
-```sh
-bit8 inspect map games/tilesheet_demo games/tilesheet_demo/world.b8map
-```
+At runtime:
 
-At runtime, `map()` draws the project's `world.b8map`. `mget(x, y)` reads a
-zero-based tile coordinate and returns its registered asset ID or `nil`.
-`mset(x, y, tile)` changes only the current RuntimeSession's in-memory map;
-passing `nil` clears a cell. Runtime edits do not modify the source file and
-are discarded when the session ends.
+    map()
+    mget(x, y)
+    mset(x, y, tile)
 
-Tiles are 8×8 game pixels. The framebuffer remains 64×64 game pixels. The
-recommended/default room and the official demo maps are 64×64 tiles, or
-512×512 game pixels (4,096 logical cells). A map is not a framebuffer: the
-64×64-pixel framebuffer covers only an 8×8-tile region.
+The framebuffer is still 64×64 game pixels. Maps represent a world,
+not the framebuffer itself.
 
-The VS Code **Bit8 Map Editor** is the Map Workspace for `.b8map` files. Its
-project-local picker lists only maps within the active workspace folder. The
-sidebar combines Pencil, Eraser, Pan and registered tiles; the map viewport
-supports pan and zoom. Painting edits the actual VS Code document through
-WorkspaceEdit, preserving save, undo/redo, revert and dirty state. The editor
-uses a deterministic initial zoom based on map dimensions (64×64 maps open at
-12.5%, showing the full map at about 512×512 CSS px in a typical viewport),
-then supports free pan and zoom. CSS size is presentation only. `.b8map`
-remains variable-sized (up to 256×256 tiles); smaller and larger valid maps are
-still supported. The framebuffer remains 64×64 game pixels. The enabled
-Camera with the smallest numeric Node ID supplies the center of the 64×64 viewport; without one the origin is
-(0,0). Runtime `map()` and sprite drawing use that world-to-screen transform.
+## Nodes
 
-The project model is deliberately linear: tilesheet resources feed `.b8map`
-data, which a game may consume.
+Maps may contain Nodes with position, scripts, Sprite bindings,
+colliders and other runtime state.
 
-## Node Sprite workflow
+Bit8 follows a simple idea:
 
-Register a PNG → use stable tile IDs → define a Sprite in `bit8.sprites.toml`
-→ assign the Sprite to an ordinary Map Node → assign its `.b8` script.
-For example, a Player Sprite may use preview `A4`, idle frames `["A4"]` at
-2 FPS and walk frames `["A4", "A5", "A6", "A7"]` at 8 FPS, all registered
-8×8 cells. A persisted `sprite = "Player"` binds before Node init:
+> Main assembles the game. Nodes live the game.
 
-```lua
-func init()
-    self:play("idle")
-end
-func update()
-    if btn(RIGHT) then
-        self:move(1, 0)
-        self:play("walk")
-    else
+A Node script can implement:
+
+    func init()
+    end
+
+    func update()
+    end
+
+    func draw()
+    end
+
+## Sprites and Animation
+
+Sprites are defined in `bit8.sprites.toml` using stable tile IDs.
+
+For example:
+
+    [sprite.Player]
+    preview = "A4"
+
+    [sprite.Player.animation.idle]
+    frames = ["A4"]
+    fps = 2
+    loop = true
+
+    [sprite.Player.animation.walk]
+    frames = ["A4", "A5", "A6", "A7"]
+    fps = 8
+    loop = true
+
+A Node with the `Player` Sprite can then use:
+
+    func init()
         self:play("idle")
     end
-end
-func draw()
-    self:spr()
-end
-```
 
-Map Workspace shows a static preview and read-only animation information.
-Open Definition opens the project's Sprite TOML (file-only navigation).
-Legacy Visual remains a fallback only when no Sprite is assigned.
-Direct `spr(A4,x,y)` / `sprite(A4,x,y)` and numeric sprites remain valid
-low-level APIs. See [Node Sprite workflow](docs/map-node-sprites.md).
+    func update()
+        if btn(RIGHT) then
+            self:move(1, 0)
+            self:play("walk")
+        else
+            self:play("idle")
+        end
+    end
 
-Box Collider offsets and dimensions are integer game pixels. Mark registered
-map tiles Solid with `bit8 tilesheet solid <project> A1 true` or the existing
-editor tile metadata control. `self:collide(dx,dy)` is a non-mutating query;
-`self:move(dx,dy)` sweeps integer pixels, X before Y, against Solid tiles.
-Raw `self.x/self.y` assignment remains unconstrained, and runtime mutation never
-rewrites `.b8map`. Collision coordinates are independent of Camera rendering.
+    func draw()
+        self:spr()
+    end
+
+## Collision
+
+Registered tiles may be marked Solid.
+
+Nodes can use Box Colliders and query or perform collision-aware
+movement:
+
+    self:collide(dx, dy)
+    self:move(dx, dy)
+
+Movement is resolved one game pixel at a time, X before Y.
+
+## Camera
+
+A Camera Node defines the center of the 64×64 viewport.
+
+World-space maps and sprites are transformed through the active
+Camera, while screen-space drawing APIs remain screen-space.
 
 ## VS Code
 
-The `bit8-vscode` extension provides Bit8 syntax and language-service support,
-the Map Workspace, explicit PNG registration commands, and **Explorer → BIT8 GAME**. Run and Stop
-are VS Code commands; the Explorer Game Surface displays only the host's
-framebuffer. Its logical size remains 64×64 and its square display uses the
-largest size that fits (`min(available width, available height)`), aligned at
-the top-left. Focus the canvas for gameplay input: arrows map to
-UP/DOWN/LEFT/RIGHT, Z to A, and X to B. Collapsing the view does not stop the
-game.
+The `bit8-vscode` extension provides:
+
+- Bit8 syntax support
+- completion and hover information
+- diagnostics
+- Map Workspace
+- Sprite information
+- Node editing
+- asset registration
+- integrated BIT8 GAME view
+- Run and Stop commands
+
+The Game View communicates with the runtime through Bit8's
+editor-independent host interface.
+
+## Host Protocol
+
+Other editors and tools can run Bit8 without using the native game
+window:
+
+    bit8 host <project-path>
+
+The host communicates using NDJSON over stdin/stdout.
+
+This interface is intentionally independent from VS Code so other
+frontends can integrate with Bit8 in the future.
+
+## Architecture
+
+Bit8 keeps the runtime separate from editor integrations.
+
+    Game Project
+         │
+         ▼
+    RuntimeSession
+         │
+       ┌─┴──────────┐
+       ▼            ▼
+    bit8 run      bit8 host
+       │            │
+       ▼            ▼
+    Desktop       Editors /
+    Window        Tooling
+
+VS Code is a Bit8 frontend, not the Bit8 runtime itself.
+
+## Documentation
+
+More detailed documentation is available in `docs/`.
+
+The Wiki will contain user-oriented guides for:
+
+- Getting Started
+- Bit8 language basics
+- Drawing
+- Input
+- Assets
+- Maps
+- Nodes
+- Sprites and Animation
+- Collision
+- Camera
+- VS Code
+- CLI reference
+- Host integration
+
+See `CHANGELOG.md` for the 0.1.0 capability summary.
+
+## Status
+
+Bit8 is currently at **0.1.0**.
+
+This is the first public release. The project is still young and its
+APIs and file formats may evolve in future versions.
+
+## License
+
+Bit8 is released under the MIT License.
+
+Copyright (c) 2026 AKI
