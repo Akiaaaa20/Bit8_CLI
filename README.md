@@ -1,285 +1,419 @@
+BIT8_CLI 0.1.0 Multilingual Public README Update
+
+Repository:
+/Users/komizai.aki/project/BIT8-API
+
+Public repository:
+https://github.com/Akiaaaa20/Bit8_CLI
+
+This is a documentation-only task.
+
+BIT8_CLI 0.1.0 will provide four synchronized README languages:
+
+1. English
+2. Traditional Chinese (Taiwan)
+3. Japanese
+4. Korean
+
+Do not modify Runtime, CLI, Language Service, extension behavior,
+file formats, tests, schemas, or version numbers.
+
+==================================================
+1. ENGLISH README
+==================================================
+
+Rewrite and polish:
+
+README.md
+
+for the actual public BIT8_CLI 0.1.0 repository.
+
+Remove obsolete pre-publication wording, especially:
+
+"This repository is undergoing local final-release preparation;
+no publication is implied."
+
+The README should be medium-length.
+
+It should be welcoming and useful to a new developer while retaining
+important technical information about Bit8 0.1.0.
+
+Do not turn README.md into a complete specification.
+
+Use approximately this structure:
+
 # Bit8 0.1.0
 
-Bit8 is a tiny Lua-powered 2D game runtime and development toolkit
-built in Rust.
+Language switcher
 
-Games run on a fixed 64×64 framebuffer with Lua 5.4 scripting.
-Bit8 includes a CLI runtime, tilemaps, Sprites and animation, Nodes,
-collision, Camera support, a language service, and an integrated
-VS Code development workflow.
+Short introduction
 
 ## Features
 
-- Lua 5.4 scripting with `.b8`
-- 64×64 framebuffer
-- Fixed 30 Hz simulation
-- 8×8 tiles and stable asset IDs
-- Tilemaps up to 256×256 tiles
-- Sprite and animation definitions
-- Scriptable Map Nodes
-- Box collision and Solid tiles
-- Camera-based world rendering
-- Language Service
-- VS Code Map Workspace
-- Integrated BIT8 GAME view
-- Editor-independent host protocol
-
 ## Quick Start
 
-### Build and install
+Include:
+- installation from source
+- running a project
+- controls
 
-From the repository root:
+## A Tiny Bit8 Program
 
-    cargo install --path . --locked
-
-Run a project:
-
-    bit8 run <project-path>
-
-A Bit8 project normally uses:
-
-    main.b8
-
-Legacy `main.lua` projects are also supported.
-
-### Controls
-
-The desktop runtime uses:
-
-    Arrow Keys   Direction
-    Z            A
-    X            B
-    Escape       Exit
-
-## A tiny Bit8 program
-
-    func init()
-        x = 28
-        y = 28
-    end
-
-    func update()
-        if btn(LEFT) then x = x - 1 end
-        if btn(RIGHT) then x = x + 1 end
-        if btn(UP) then y = y - 1 end
-        if btn(DOWN) then y = y + 1 end
-    end
-
-    func draw()
-        cls()
-        rectfill(x, y, x + 7, y + 7, 7)
-    end
+Provide a small valid .b8 example.
 
 ## Project Structure
 
-A Bit8 project can contain:
-
-    my-game/
-    ├── main.b8
-    ├── world.b8map
-    ├── bit8.assets.toml
-    ├── bit8.sprites.toml
-    ├── player.b8
-    └── tilesheet (A).png
-
-Not every project needs every file.
+Show a representative project layout.
 
 ## Tilesheets and Asset IDs
 
-PNG tilesheets are registered through `bit8.assets.toml`.
-
-Tiles are 8×8 game pixels and receive stable IDs such as:
-
-    A1
-    A2
-    A3
-    B1
-
-Asset group identity is explicit and is not inferred from the
-filename.
-
-Registered tiles can be drawn directly:
-
-    spr(A4, x, y)
+Explain:
+- explicit PNG registration
+- 8x8 tiles
+- stable asset IDs such as A1/A2
+- direct spr() remains available
 
 ## Maps
 
-Bit8 uses `.b8map` text maps.
-
-    version = 1
-    width = 4
-    height = 2
-
-    A1 A1 A1 A1
-    A1 -- A4 A1
-
-Maps may be up to 256×256 tiles.
-
-At runtime:
-
-    map()
-    mget(x, y)
-    mset(x, y, tile)
-
-The framebuffer is still 64×64 game pixels. Maps represent a world,
-not the framebuffer itself.
+Explain:
+- .b8map
+- maximum 256x256 tiles
+- map(), mget(), mset()
+- framebuffer remains 64x64 game pixels
+- a map is a world, not a framebuffer
 
 ## Nodes
 
-Maps may contain Nodes with position, scripts, Sprite bindings,
-colliders and other runtime state.
+Explain the Node model.
 
-Bit8 follows a simple idea:
+Include the design principle exactly:
 
-> Main assembles the game. Nodes live the game.
-
-A Node script can implement:
-
-    func init()
-    end
-
-    func update()
-    end
-
-    func draw()
-    end
+"Main assembles the game. Nodes live the game."
 
 ## Sprites and Animation
 
-Sprites are defined in `bit8.sprites.toml` using stable tile IDs.
+Explain:
+PNG -> stable tile IDs -> Sprite/Animation definition -> Node -> script
 
-For example:
+Include a small Node animation example using:
 
-    [sprite.Player]
-    preview = "A4"
-
-    [sprite.Player.animation.idle]
-    frames = ["A4"]
-    fps = 2
-    loop = true
-
-    [sprite.Player.animation.walk]
-    frames = ["A4", "A5", "A6", "A7"]
-    fps = 8
-    loop = true
-
-A Node with the `Player` Sprite can then use:
-
-    func init()
-        self:play("idle")
-    end
-
-    func update()
-        if btn(RIGHT) then
-            self:move(1, 0)
-            self:play("walk")
-        else
-            self:play("idle")
-        end
-    end
-
-    func draw()
-        self:spr()
-    end
+self:play(...)
+self:move(...)
+self:spr()
 
 ## Collision
 
-Registered tiles may be marked Solid.
-
-Nodes can use Box Colliders and query or perform collision-aware
-movement:
-
-    self:collide(dx, dy)
-    self:move(dx, dy)
-
-Movement is resolved one game pixel at a time, X before Y.
+Explain Solid tiles, Box Collider, self:collide(), and self:move()
+at a concise user-facing level.
 
 ## Camera
 
-A Camera Node defines the center of the 64×64 viewport.
-
-World-space maps and sprites are transformed through the active
-Camera, while screen-space drawing APIs remain screen-space.
+Explain that the active Camera controls the world-space viewport.
 
 ## VS Code
 
-The `bit8-vscode` extension provides:
+Explain the Bit8 VS Code extension and its major 0.1.0 capabilities:
 
-- Bit8 syntax support
-- completion and hover information
+- syntax support
+- completion
+- hover
 - diagnostics
 - Map Workspace
 - Sprite information
 - Node editing
 - asset registration
-- integrated BIT8 GAME view
-- Run and Stop commands
+- BIT8 GAME view
+- Run / Stop
 
-The Game View communicates with the runtime through Bit8's
-editor-independent host interface.
+Clearly state that VS Code is a frontend/client of Bit8,
+not the Bit8 runtime itself.
 
 ## Host Protocol
 
-Other editors and tools can run Bit8 without using the native game
-window:
+Briefly explain:
 
-    bit8 host <project-path>
+bit8 host <project-path>
 
-The host communicates using NDJSON over stdin/stdout.
+and its role as an editor-independent frontend interface.
 
-This interface is intentionally independent from VS Code so other
-frontends can integrate with Bit8 in the future.
+Deep NDJSON protocol details should remain in technical documentation
+rather than dominate the README.
 
 ## Architecture
 
-Bit8 keeps the runtime separate from editor integrations.
+Provide a concise conceptual overview of:
 
-    Game Project
-         │
-         ▼
-    RuntimeSession
-         │
-       ┌─┴──────────┐
-       ▼            ▼
-    bit8 run      bit8 host
-       │            │
-       ▼            ▼
-    Desktop       Editors /
-    Window        Tooling
+Game Project
+    |
+RuntimeSession
+    |
++---+---+
+|       |
+bit8 run
+bit8 host
+|       |
+Desktop Editors/
+Window  Tooling
 
-VS Code is a Bit8 frontend, not the Bit8 runtime itself.
+The exact Markdown/ASCII formatting may be improved.
 
 ## Documentation
 
-More detailed documentation is available in `docs/`.
+Point readers to docs/, CHANGELOG.md, and other existing relevant
+documentation.
 
-The Wiki will contain user-oriented guides for:
+Do not claim that a GitHub Wiki already contains content unless it
+actually exists.
 
-- Getting Started
-- Bit8 language basics
-- Drawing
-- Input
-- Assets
-- Maps
-- Nodes
-- Sprites and Animation
-- Collision
-- Camera
-- VS Code
-- CLI reference
-- Host integration
+## Project Status
 
-See `CHANGELOG.md` for the 0.1.0 capability summary.
+State:
 
-## Status
+Bit8 0.1.0 is the first public release.
 
-Bit8 is currently at **0.1.0**.
+Explain that Bit8 is still young and APIs/file formats may evolve in
+future versions.
 
-This is the first public release. The project is still young and its
-APIs and file formats may evolve in future versions.
+Do not mention unreleased 0.2.0 features.
 
 ## License
 
-Bit8 is released under the MIT License.
+MIT License
 
 Copyright (c) 2026 AKI
+
+==================================================
+2. FOUR-LANGUAGE SWITCHER
+==================================================
+
+Use the same four-language navigation at the top of every README.
+
+README.md:
+
+**English** | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+
+README.zh-TW.md:
+
+[English](README.md) | **繁體中文** | [日本語](README.ja.md) | [한국어](README.ko.md)
+
+README.ja.md:
+
+[English](README.md) | [繁體中文](README.zh-TW.md) | **日本語** | [한국어](README.ko.md)
+
+README.ko.md:
+
+[English](README.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | **한국어**
+
+==================================================
+3. TRADITIONAL CHINESE README
+==================================================
+
+Create or update:
+
+README.zh-TW.md
+
+This must be a complete localization of the final English README,
+not a shortened summary.
+
+Use natural Taiwan Traditional Chinese.
+
+Do not use Simplified Chinese.
+
+Keep Bit8 product/API terminology in English where it improves
+consistency with the actual UI and API.
+
+Examples include:
+
+Runtime
+Node
+Sprite
+Animation
+Camera
+Asset ID
+Map Workspace
+Host Protocol
+Language Service
+
+Do not translate:
+
+- commands
+- API identifiers
+- filenames
+- file extensions
+- TOML keys
+- .b8 code
+- asset IDs
+
+Technical explanations should sound natural to a Taiwanese developer,
+not like literal machine translation.
+
+==================================================
+4. JAPANESE README
+==================================================
+
+Create or update:
+
+README.ja.md
+
+This must be a complete localization of the final English README.
+
+Use natural technical Japanese appropriate for software/game
+development documentation.
+
+Avoid awkward word-for-word translation.
+
+Preserve commands, API identifiers, filenames, code, TOML keys,
+asset IDs, and Bit8-specific product terminology where appropriate.
+
+==================================================
+5. KOREAN README
+==================================================
+
+Create:
+
+README.ko.md
+
+This must be a complete Korean localization of the same final English
+README.
+
+Use natural Korean technical writing appropriate for software and
+game-development documentation.
+
+Do not produce literal or machine-like translation.
+
+Preserve Bit8 API names and technical identifiers where appropriate,
+including:
+
+Runtime
+Node
+Sprite
+Animation
+Camera
+Asset ID
+Map Workspace
+Host Protocol
+Language Service
+
+Do not translate:
+
+- commands
+- API identifiers
+- filenames
+- file extensions
+- TOML keys
+- .b8 code
+- asset IDs
+
+==================================================
+6. FOUR-LANGUAGE CONSISTENCY AUDIT
+==================================================
+
+After all four READMEs are complete, compare them section by section.
+
+They must describe the same BIT8_CLI 0.1.0 product.
+
+Verify all four consistently state:
+
+- Rust runtime
+- Lua 5.4 scripting
+- .b8 scripting
+- 64x64 framebuffer
+- 8x8 tiles
+- stable asset IDs
+- map maximum 256x256 tiles
+- fixed 30 Hz simulation
+- Map Nodes
+- Sprite definitions
+- Animation
+- Solid tile / Box Collider collision
+- Camera
+- Language Service
+- VS Code integration
+- BIT8 GAME
+- editor-independent host protocol
+- MIT License
+- Copyright (c) 2026 AKI
+
+Check all numeric limits carefully.
+
+Do not accidentally translate code or API names differently between
+languages.
+
+Do not introduce features that are not part of 0.1.0.
+
+==================================================
+7. LINK AUDIT
+==================================================
+
+Check every relative Markdown link in all four README files.
+
+Verify:
+
+- language switcher links
+- CHANGELOG.md
+- docs/ links
+- other referenced local documentation
+
+Do not leave broken links.
+
+Do not invent Wiki links or documentation files that do not exist.
+
+==================================================
+8. PUBLICATION BOUNDARY
+==================================================
+
+Do NOT:
+
+- modify Runtime source
+- modify CLI source
+- modify Language Service source
+- modify extension implementation
+- modify tests
+- modify schemas
+- modify BIT8-RELEASE
+- rebuild binaries
+- rebuild VSIX
+- change version numbers
+- create v0.1.0 tag
+- create GitHub Release
+
+This task changes documentation only.
+
+==================================================
+9. GIT
+==================================================
+
+Review the diff before committing.
+
+Confirm that only intended documentation files changed.
+
+Commit with:
+
+Add multilingual public README
+
+Push the documentation commit to:
+
+origin/main
+
+Do not create or push any tag.
+
+==================================================
+10. REPORT
+==================================================
+
+Report:
+
+A. English README changes
+B. Traditional Chinese README status
+C. Japanese README status
+D. Korean README status
+E. four-language consistency audit
+F. link audit
+G. files changed
+H. commit hash
+I. push result
+J. final git status
+
+End with exactly:
+
+BIT8_CLI FOUR-LANGUAGE README READY
