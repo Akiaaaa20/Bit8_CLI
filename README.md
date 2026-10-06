@@ -1,4 +1,4 @@
-![BIT8 Preview](docs/images/bit8-preview.png)
+![BIT8 Preview](BIT_8.jpg)
 
 # BIT8_CLI 0.1.0
 
