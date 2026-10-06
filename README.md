@@ -1,4 +1,6 @@
-![BIT8 Preview](BIT_8.jpg)
+<p align="center">
+  <img src="BIT_8.jpg" width="45%">
+</p>
 
 # BIT8_CLI 0.1.0
 
