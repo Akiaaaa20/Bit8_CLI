@@ -1,0 +1,8 @@
+func update()
+    player = node("Player")
+
+    if player then
+        self.x = player.x
+        self.y = player.y
+    end
+end

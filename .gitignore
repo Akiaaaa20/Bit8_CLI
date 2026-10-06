@@ -1,0 +1,39 @@
+# Reproducible Rust and extension build/test output (not source or lockfiles).
+target/
+node_modules/
+/bit8-vscode/out/
+.vscode-test/
+coverage/
+/bit8-vscode/test-results/
+/bit8-vscode/.test-workspaces/
+
+# Packaged artifacts belong outside the public source tree.
+*.vsix
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Local OS/editor state; keep the extension's portable launch/tasks configs.
+.DS_Store
+._*
+/.vscode/
+/games/**/.vscode/
+.idea/
+.cache/
+*.swp
+*.swo
+*~
+*.tmp
+*.log
+/tmp/
+/.tmp/
+
+# Local credentials; sanitized example configuration may be source material.
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Historical local validation report: personal paths and temporary test logs.
+/docs/0.1.0-rc1-audit.md

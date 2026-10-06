@@ -1,0 +1,10 @@
+func init()
+end
+
+func update()
+end
+
+func draw()
+    cls(0)
+    map()
+end

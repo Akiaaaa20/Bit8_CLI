@@ -1,0 +1,9 @@
+func draw()
+    cls(0)
+
+    line(2, 2, 30, 20, 1)
+    rect(4, 4, 20, 12, 2)
+    rectfill(30, 4, 12, 12, 3)
+    circ(16, 40, 8, 4)
+    circfill(42, 40, 8, 5)
+end

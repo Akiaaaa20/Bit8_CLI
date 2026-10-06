@@ -1,0 +1,3 @@
+func draw()
+    cls(0)
+end

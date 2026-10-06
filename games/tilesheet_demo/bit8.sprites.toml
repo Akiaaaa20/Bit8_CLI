@@ -1,0 +1,14 @@
+version = 1
+
+[sprite.Player]
+preview = "A4"
+
+[sprite.Player.animation.idle]
+frames = ["A4"]
+fps = 2
+loop = true
+
+[sprite.Player.animation.walk]
+frames = ["A4", "A3", "A2", "A1"]
+fps = 8
+loop = true

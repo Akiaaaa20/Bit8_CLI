@@ -1,0 +1,10 @@
+version = 1
+retired_groups = ["B"]
+
+[[tilesheets]]
+group = "A"
+file = "tilesheet (A).png"
+
+[[tilesheets]]
+group = "C"
+file = "MrHamburger (C).png"

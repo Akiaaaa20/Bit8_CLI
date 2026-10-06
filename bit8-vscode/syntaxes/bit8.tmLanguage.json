@@ -1,0 +1,51 @@
+{
+  "scopeName": "source.bit8",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    {
+      "name": "keyword.control.function.bit8",
+      "match": "\\bfunc(?=\\s+[A-Za-z_][A-Za-z0-9_]*\\s*\\()"
+    },
+    {
+      "name": "keyword.control.lua",
+      "match": "\\b(and|break|do|else|elseif|end|false|for|function|if|in|local|nil|not|or|repeat|return|then|true|until|while)\\b"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.lua",
+          "begin": "--\\[\\[",
+          "end": "\\]\\]"
+        },
+        {
+          "name": "comment.line.double-dash.lua",
+          "match": "--.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.other.multiline.lua",
+          "begin": "\\[\\[",
+          "end": "\\]\\]"
+        },
+        {
+          "name": "string.quoted.double.lua",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [{ "name": "constant.character.escape.lua", "match": "\\\\." }]
+        },
+        {
+          "name": "string.quoted.single.lua",
+          "begin": "'",
+          "end": "'",
+          "patterns": [{ "name": "constant.character.escape.lua", "match": "\\\\." }]
+        }
+      ]
+    }
+  }
+}

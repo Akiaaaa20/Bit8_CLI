@@ -1,0 +1,150 @@
+{
+  "name": "bit8-vscode",
+  "displayName": "Bit8",
+  "description": "A small VS Code extension for the Bit8 runtime.",
+  "version": "0.1.0",
+  "publisher": "bit8",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akiaaaa20/Bit8_CLI.git"
+  },
+  "engines": {
+    "vscode": "^1.101.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:lua",
+    "onLanguage:bit8",
+    "onCommand:bit8.runGame",
+    "onCommand:bit8.stopGame",
+    "onCommand:bit8.restartGame",
+    "onCommand:bit8.insertGameLoop",
+    "onCommand:bit8.addTilesheet",
+    "onCommand:bit8.applyTilesheetName",
+    "onCustomEditor:bit8.mapEditor",
+    "onView:bit8.gameSurface",
+    "onCommand:bit8.useBit8LanguageMode"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "bit8.runGame",
+        "title": "Bit8: Run Game"
+      },
+      {
+        "command": "bit8.stopGame",
+        "title": "Bit8: Stop Game"
+      },
+      {
+        "command": "bit8.restartGame",
+        "title": "Bit8: Restart Game"
+      },
+      {
+        "command": "bit8.insertGameLoop",
+        "title": "Bit8: Insert Game Loop"
+      },
+      {
+        "command": "bit8.useBit8LanguageMode",
+        "title": "Bit8: Use Bit8 Language Mode"
+      },
+      {
+        "command": "bit8.addTilesheet",
+        "title": "Bit8: Add to Bit8"
+      },
+      {
+        "command": "bit8.applyTilesheetName",
+        "title": "Bit8: Apply Bit8 Name"
+      }
+    ],
+    "languages": [
+      {
+        "id": "bit8",
+        "extensions": [
+          ".b8"
+        ],
+        "aliases": [
+          "Bit8",
+          "bit8"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bit8",
+        "scopeName": "source.bit8",
+        "path": "./syntaxes/bit8.tmLanguage.json"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "bit8.mapEditor",
+        "displayName": "Bit8 Map Editor",
+        "selector": [
+          {
+            "filenamePattern": "**/*.b8map"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "bit8.gameSurface",
+          "name": "BIT8 GAME",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "bit8.addTilesheet",
+          "when": "resourceExtname == .png",
+          "group": "bit8@1"
+        },
+        {
+          "command": "bit8.applyTilesheetName",
+          "when": "resourceExtname == .png",
+          "group": "bit8@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "bit8.runGame",
+          "icon": "$(play)",
+          "when": "editorLangId == lua || editorLangId == bit8",
+          "group": "navigation@1"
+        },
+        {
+          "command": "bit8.stopGame",
+          "icon": "$(debug-stop)",
+          "when": "bit8.gameRunning",
+          "group": "navigation@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./ && esbuild ./src/extension.ts --bundle --minify --platform=node --external:vscode --outfile=./out/extension.js",
+    "lint": "tsc --noEmit -p ./",
+    "test:unit": "npm run compile && node --test ./test/*.test.js",
+    "test": "npm run compile && cargo build --manifest-path ../language-service/Cargo.toml && node ./test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.30",
+    "@types/vscode": "^1.101.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.12",
+    "mocha": "^11.7.1",
+    "vscode-languageclient": "^9.0.1",
+    "typescript": "^5.8.3"
+  }
+}

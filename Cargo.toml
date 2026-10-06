@@ -1,0 +1,14 @@
+[package]
+name = "bit8"
+version = "0.1.0"
+edition = "2024"
+description = "A deliberately tiny 2D fantasy game runtime"
+license = "MIT"
+
+[dependencies]
+image = { version = "0.25.10", default-features = false, features = ["png"] }
+mlua = { version = "0.12.1", features = ["lua54", "vendored"] }
+minifb = "0.28.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+toml = "0.9.12"

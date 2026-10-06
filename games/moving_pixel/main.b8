@@ -1,0 +1,39 @@
+x = 32
+y = 32
+
+func init()
+x = 32
+y = 32
+end
+
+func update()
+if btn(LEFT) then
+    x = x - 1
+end
+if btn(RIGHT) then
+    x = x + 1
+end
+if btn(UP) then
+    y = y - 1
+end
+if btn(DOWN) then
+    y = y + 1
+end
+if x < 0 then
+    x = 0
+end
+if x >= 64 then
+    x = 63
+end
+if y < 0 then
+    y = 0
+end
+if y >= 64 then
+    y = 63
+end
+end
+
+func draw()
+cls(0)
+pix(x, y, 1)
+end
