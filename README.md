@@ -1,3 +1,5 @@
+![BIT8 Preview](docs/images/bit8-preview.png)
+
 # BIT8_CLI 0.1.0
 
 **English** | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
